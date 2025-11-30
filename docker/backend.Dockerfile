@@ -11,8 +11,9 @@ RUN npm install
 COPY backend/prisma ./prisma
 COPY backend/src ./src
 
+ENV DATABASE_URL="postgresql://osint:osintpassword@db:5432/osintmap"
+
 RUN npx prisma generate
-RUN npx prisma migrate dev --name init
 
 EXPOSE 4000
 

@@ -5,38 +5,45 @@ services:
     image: postgres:15
     container_name: osintmap_db
     environment:
+      POSTGRES_DB: osintmap
+      POSTGRES_USER: osint
       POSTGRES_PASSWORD: osintpassword
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/00-init.sql
+      - pgdata:/var/lib/postgresql/data
 
   backend:
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
     container_name: osintmap_backend
-    working_dir: /usr/src/app/backend
-    env_file:
-      - .env
-    depends_on:
-      - db
+    working_dir: /app/backend
     command: sh -c "npx prisma migrate deploy && npm run dev"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://osint:osintpassword@db:5432/osintmap
+      PORT: 4000
     volumes:
-      - ./backend:/usr/src/app/backend
+      - ./backend:/app/backend
     ports:
       - "4000:4000"
+    depends_on:
+      - db
 
-  nginx:
+  frontend:
     build:
-      context: .
-    dockerfile: docker/nginx.Dockerfile
-    container_name: osintmap_nginx
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    container_name: osintmap_frontend
+    working_dir: /app/frontend
+    volumes:
+      - ./frontend:/app/frontend
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
     depends_on:
       - backend
-    ports:
-      - "80:80"
 
 volumes:
-  db-data:
+  pgdata:
