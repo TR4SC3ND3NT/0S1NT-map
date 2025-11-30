@@ -15,20 +15,35 @@ services:
 
   backend:
     build:
-      context: ..
+      context: .
+      dockerfile: docker/backend.Dockerfile
     container_name: osintmap_backend
     working_dir: /app/backend
-    command: ["npm", "run", "dev"]
+    command: sh -c "npx prisma migrate deploy && npm run dev"
     environment:
       NODE_ENV: development
       DATABASE_URL: postgres://osint:osintpassword@db:5432/osintmap
       PORT: 4000
     volumes:
-      - ..:/app
+      - ./backend:/app/backend
     ports:
       - "4000:4000"
     depends_on:
       - db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    container_name: osintmap_frontend
+    working_dir: /app/frontend
+    command: npm run dev -- --host
+    volumes:
+      - ./frontend:/app/frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:

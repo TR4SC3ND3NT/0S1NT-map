@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore.js';
 
 export const apiClient = axios.create({
   baseURL: '/api',
   withCredentials: false
+});
 });
 
 apiClient.interceptors.request.use((config) => {
