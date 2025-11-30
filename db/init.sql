@@ -1,0 +1,5 @@
+CREATE DATABASE osintmap;
+
+CREATE USER osint WITH ENCRYPTED PASSWORD 'osintpassword';
+
+GRANT ALL PRIVILEGES ON DATABASE osintmap TO osint;

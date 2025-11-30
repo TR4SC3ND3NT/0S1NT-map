@@ -1,23 +1,34 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  backend:
-    image: your-backend-image
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - ./backend/prisma:/app/prisma
+  db:
+    image: postgres:15
+    container_name: osintmap_db
     environment:
-      DATABASE_URL: "file:./dev.db"
-  frontend:
-    image: your-frontend-image
+      POSTGRES_DB: osintmap
+      POSTGRES_USER: osint
+      POSTGRES_PASSWORD: osintpassword
     ports:
-      - "3000:3000"
-  prisma:
-    image: prismagraphql/prisma:1.34
-    ports:
-      - "4466:4466"
+      - "5432:5432"
     volumes:
-      - ./backend/prisma:/app/prisma
-```
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ..
+    container_name: osintmap_backend
+    working_dir: /app/backend
+    command: ["npm", "run", "dev"]
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://osint:osintpassword@db:5432/osintmap
+      PORT: 4000
+    volumes:
+      - ..:/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

@@ -1,0 +1,9 @@
+.osint-graph {
+  width: 100%;
+  height: 100%;
+}
+
+.osint-graph canvas,
+.osint-graph svg {
+  border-radius: 1rem;
+}
