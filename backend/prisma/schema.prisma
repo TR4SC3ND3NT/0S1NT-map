@@ -7,65 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Entity {
-  id          String   @id @default(cuid())
-  type        String
-  name        String
-  description String?
-  data        Json?
-  x           Float    @default(0)
-  y           Float    @default(0)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  linksFrom   Link[]   @relation("LinkSource")
-  linksTo     Link[]   @relation("LinkTarget")
-  notes       Note[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Link {
-  id          String   @id @default(cuid())
-  type        String
-  description String?
-  sourceId    String
-  targetId    String
-  source      Entity   @relation("LinkSource", fields: [sourceId], references: [id], onDelete: Cascade)
-  target      Entity   @relation("LinkTarget", fields: [targetId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-}
-
-model Note {
+model User {
   id        String   @id @default(cuid())
-  content   String
-  entityId  String
-  entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
-model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  password    String
-  name        String?
-  entities    Entity[]
-  links       Link[]
-  notes       Note[]
-  resetTokens ResetToken[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-model ResetToken {
+model MapPoint {
   id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
+  title     String
+  lat       Float
+  lng       Float
+  type      String
+  data      Json?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("map_points")
 }
