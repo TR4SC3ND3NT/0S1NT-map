@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  backend:
+    image: your-backend-image
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/prisma:/app/prisma
+    environment:
+      DATABASE_URL: "file:./dev.db"
+  frontend:
+    image: your-frontend-image
+    ports:
+      - "3000:3000"
+  prisma:
+    image: prismagraphql/prisma:1.34
+    ports:
+      - "4466:4466"
+    volumes:
+      - ./backend/prisma:/app/prisma
+```
