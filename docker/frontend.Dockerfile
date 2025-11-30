@@ -1,13 +1,11 @@
-FROM node:20-alpine
+FROM node:20
 
-WORKDIR /usr/src/app/frontend
+WORKDIR /app/frontend
 
-COPY frontend/package*.json ./
-
+COPY package*.json ./
 RUN npm install
 
-COPY frontend .
+COPY . .
 
 EXPOSE 5173
-
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
