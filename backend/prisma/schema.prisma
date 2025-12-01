@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -8,25 +9,74 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  entities  Entity[]
+  links     Link[]
+  notes     Note[]
+
   @@map("users")
 }
 
-model MapPoint {
-  id        String   @id @default(cuid())
-  title     String
-  lat       Float
-  lng       Float
-  type      String
-  data      Json?
+model Entity {
+  id          Int      @id @default(autoincrement())
+  type        String   // person, organization, domain, ip, etc.
+  label       String   // Имя или название (отображается на графе)
+  attributes  Json?    // Любые доп. данные (телефон, email и т.д.)
+  x           Float?   // Координата для сохранения позиции на графе
+  y           Float?   // Координата
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  notes       Note[]
+  
+  // Связи, где эта сущность является источником
+  linksFrom   Link[]   @relation("SourceLink")
+  // Связи, где эта сущность является целью
+  linksTo     Link[]   @relation("TargetLink")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("entities")
+}
+
+model Link {
+  id        Int      @id @default(autoincrement())
+  type      String   // owns, knows, works_at
+  
+  sourceId  Int
+  source    Entity   @relation("SourceLink", fields: [sourceId], references: [id], onDelete: Cascade)
+  
+  targetId  Int
+  target    Entity   @relation("TargetLink", fields: [targetId], references: [id], onDelete: Cascade)
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("links")
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String
+  
+  entityId  Int
+  entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("map_points")
+  @@map("notes")
 }

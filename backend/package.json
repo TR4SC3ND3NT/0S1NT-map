@@ -5,10 +5,10 @@
   "type": "module",
   "main": "src/app.js",
   "scripts": {
-    "dev": "node src/app.js",
-    "start": "NODE_ENV=production node src/app.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+  "start": "node src/app.js",
+  "dev": "node src/app.js",
+  "prisma:generate": "prisma generate",
+  "db:init": "npx prisma migrate dev --name init" 
   },
   "dependencies": {
     "@prisma/client": "5.16.2",
