@@ -1,10 +1,19 @@
+import { useMemo } from 'react';
 import { useAuthStore } from '../store/useAuthStore.js';
 
 export function useAuth() {
-  const user = useAuthStore((s) => s.user);
-  const token = useAuthStore((s) => s.token);
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const clear = useAuthStore((s) => s.clear);
-  const isAuthenticated = Boolean(token);
-  return { user, token, setAuth, clear, isAuthenticated };
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const logout = useAuthStore((state) => state.logout);
+
+  const isAuthenticated = useMemo(() => Boolean(token), [token]);
+
+  return {
+    user,
+    token,
+    isAuthenticated,
+    setAuth,
+    logout,
+  };
 }

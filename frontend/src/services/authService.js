@@ -1,15 +1,16 @@
-import { apiClient } from './apiClient.js';
-
-export async function login(email, password) {
-  const { data } = await apiClient.post('/auth/login', { email, password });
-  return data;
-}
+import api from './apiClient.js';
 
 export async function register(email, password, name) {
-  const { data } = await apiClient.post('/auth/register', { email, password, name });
-  return data;
+  const response = await api.post('/auth/register', { email, password, name });
+  return response.data;
 }
 
-export async function forgotPassword(email) {
-  await apiClient.post('/auth/forgot-password', { email });
+export async function login(email, password) {
+  const response = await api.post('/auth/login', { email, password });
+  return response.data;
+}
+
+export async function getCurrentUser() {
+  const response = await api.get('/auth/me');
+  return response.data;
 }

@@ -6,10 +6,10 @@ services:
       POSTGRES_DB: osintmap
       POSTGRES_USER: osint
       POSTGRES_PASSWORD: osintpassword
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   backend:
     build:
@@ -18,29 +18,28 @@ services:
     container_name: osintmap_backend
     working_dir: /app/backend
     environment:
-      DATABASE_URL: postgresql://osint:osintpassword@db:5432/osintmap
       NODE_ENV: development
+      DATABASE_URL: postgres://osint:osintpassword@db:5432/osintmap
       PORT: 4000
     depends_on:
       - db
-    volumes:
-      - ./backend:/app/backend
     ports:
       - "4000:4000"
-    command: sh -c "npx prisma@5.16.2 migrate deploy && npm run dev"
+    command: sh -c "until npm run prisma:migrate; do echo 'DB not ready, retry in 3s'; sleep 3; done; npm run dev"
+    restart: always
   frontend:
     build:
       context: ./frontend
-    dockerfile: ../docker/frontend.Dockerfile
     container_name: osintmap_frontend
     working_dir: /app/frontend
+    environment:
+      VITE_API_BASE_URL: http://backend:4000/api
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app/frontend
     ports:
       - "5173:5173"
     command: npm run dev -- --host 0.0.0.0
+
 
 volumes:
   pgdata:

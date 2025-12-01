@@ -1,13 +1,12 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore.js';
 
 const apiClient = axios.create({
   baseURL: '/api',
-  withCredentials: false
+  withCredentials: false,
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -15,4 +14,5 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+export default apiClient;
 export { apiClient };

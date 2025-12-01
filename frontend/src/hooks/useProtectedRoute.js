@@ -1,18 +1,15 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './useAuth.js';
 
-export function ProtectedRoute({ children }) {
+export function useProtectedRoute() {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
 
-  if (!isAuthenticated) {
-    return React.createElement(Navigate, {
-      to: '/login',
-      replace: true,
-      state: { from: location }
-    });
-  }
-
-  return children;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true, state: { from: location } });
+    }
+  }, [isAuthenticated, navigate, location]);
 }
