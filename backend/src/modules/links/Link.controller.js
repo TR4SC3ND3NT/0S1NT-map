@@ -13,7 +13,9 @@ class LinkController extends BaseController {
 
   async remove(req, res, next) {
     try {
-      await LinkService.remove(req.user.id, req.params.id);
+      // ВАЖНО: Преобразуем ID
+      const id = Number(req.params.id);
+      await LinkService.remove(req.user.id, id);
       return this.noContent(res);
     } catch (e) {
       next(e);
@@ -22,9 +24,11 @@ class LinkController extends BaseController {
 
   async listByEntity(req, res, next) {
     try {
+      // ВАЖНО: Преобразуем entityId
+      const entityId = Number(req.params.entityId);
       const links = await LinkService.listByEntity(
         req.user.id,
-        req.params.entityId
+        entityId
       );
       return this.success(res, links);
     } catch (e) {

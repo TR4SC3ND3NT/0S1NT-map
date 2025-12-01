@@ -17,7 +17,9 @@ class EntityController extends BaseController {
 
   async get(req, res, next) {
     try {
-      const entity = await EntityService.getById(req.user.id, req.params.id);
+      // ВАЖНО: Преобразуем строку в число
+      const id = Number(req.params.id);
+      const entity = await EntityService.getById(req.user.id, id);
       return this.success(res, entity);
     } catch (e) {
       next(e);
@@ -35,9 +37,11 @@ class EntityController extends BaseController {
 
   async update(req, res, next) {
     try {
+      // ВАЖНО: Преобразуем строку в число
+      const id = Number(req.params.id);
       const entity = await EntityService.update(
         req.user.id,
-        req.params.id,
+        id,
         req.body
       );
       return this.success(res, entity);
@@ -48,7 +52,9 @@ class EntityController extends BaseController {
 
   async remove(req, res, next) {
     try {
-      await EntityService.remove(req.user.id, req.params.id);
+      // ВАЖНО: Преобразуем строку в число
+      const id = Number(req.params.id);
+      await EntityService.remove(req.user.id, id);
       return this.noContent(res);
     } catch (e) {
       next(e);
@@ -57,9 +63,11 @@ class EntityController extends BaseController {
 
   async updatePosition(req, res, next) {
     try {
+      // ВАЖНО: Преобразуем строку в число
+      const id = Number(req.params.id);
       const entity = await EntityService.updatePosition(
         req.user.id,
-        req.params.id,
+        id,
         req.body
       );
       return this.success(res, entity);

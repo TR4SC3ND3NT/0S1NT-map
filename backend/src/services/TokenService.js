@@ -4,7 +4,7 @@ import { signJwt, verifyJwt } from '../config/jwt.js';
 class TokenService {
   static generateAccessToken(user) {
     return signJwt({
-      sub: user.id,
+      id: user.id,
       email: user.email
     });
   }
