@@ -2,7 +2,6 @@ import TokenService from '../services/TokenService.js';
 import { createError } from '../utils/validators.js';
 
 export default function authMiddleware(req, res, next) {
-  // Разрешаем OPTIONS запросы (preflight) проходить без токена
   if (req.method === 'OPTIONS') {
     return next();
   }
@@ -18,7 +17,6 @@ export default function authMiddleware(req, res, next) {
   try {
     const payload = TokenService.verifyAccessToken(token);
     
-    // Теперь точно используем 'id' (больше нет 'sub')
     const userId = payload.id;
 
     if (!userId) {

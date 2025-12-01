@@ -16,14 +16,13 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: ../docker/backend.Dockerfile
+      context: .
+      dockerfile: docker/backend.Dockerfile
     container_name: osintmap_backend
     working_dir: /app/backend
     restart: always
     environment:
       NODE_ENV: development
-      # Важно: добавляем ?schema=public
       DATABASE_URL: postgresql://osint:osintpassword@db:5432/osintmap?schema=public
       PORT: 4000
       JWT_SECRET: changeme_secret_key
@@ -31,18 +30,16 @@ services:
       - db
     ports:
       - "4000:4000"
-    # ИСПРАВЛЕНИЕ: Используем db push вместо migrate
     command: sh -c "npx prisma generate && npx prisma db push && npm run dev"
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ../docker/frontend.Dockerfile
+      context: .
+      dockerfile: docker/frontend.Dockerfile
     container_name: osintmap_frontend
     working_dir: /app/frontend
     restart: always
     environment:
-      # Vite Proxy обрабатывает /api, поэтому здесь путь относительный или пустой
       VITE_API_BASE_URL: /api
     depends_on:
       - backend

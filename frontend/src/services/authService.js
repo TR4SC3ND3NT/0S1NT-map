@@ -1,17 +1,25 @@
-import api from './apiClient.js';
+import apiClient from './apiClient';
 
-export async function register(email, password, name) {
-  const r = await api.post('/auth/register', { email, password, name });
-  if (r.data.token) localStorage.setItem('token', r.data.token);
-  return r.data.user;
-}
+const authService = {
+  async register(payload) {
+    const response = await apiClient.post('/auth/register', payload);
+    return response.data?.data || response.data;
+  },
 
-export async function login(email, password) {
-  const r = await api.post('/auth/login', { email, password });
-  if (r.data.token) localStorage.setItem('token', r.data.token);
-  return r.data.user;
-}
+  async login(payload) {
+    const response = await apiClient.post('/auth/login', payload);
+    return response.data?.data || response.data;
+  },
 
-export function logout() {
-  localStorage.removeItem('token');
-}
+  async getProfile() {
+    const response = await apiClient.get('/auth/me');
+    return response.data?.data || response.data;
+  }
+};
+
+// Named exports для совместимости
+export const register = authService.register;
+export const login = authService.login;
+export const getProfile = authService.getProfile;
+
+export default authService;
